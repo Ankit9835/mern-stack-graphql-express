@@ -2,21 +2,30 @@ const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const http = require('http');
 require('dotenv').config();
+const path = require('path');
+const { makeExecutableSchema } = require("graphql-tools");
+const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
+const { loadFilesSync } = require("@graphql-tools/load-files");
+const mongoose = require('mongoose')
 
 const app = express();
 
-const typeDefs = `
-    type Query {
-        totalPosts: Int!
-    }
-`;
+const connectDB = () => {
+    return mongoose.connect(process.env.DB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+  }
 
-// Resolvers
-const resolvers = {
-    Query: {
-        totalPosts: () => 42
-    }
-};
+  connectDB()
+
+
+
+// typeDefs
+const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, "./typeDefs")));
+
+const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./resolvers")));
+
 
 // Create an ApolloServer instance
 const apolloServer = new ApolloServer({

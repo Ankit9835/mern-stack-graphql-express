@@ -9,7 +9,8 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        totalPosts: () => 42
+        totalPosts: () => 42,
+        me: () => 'Ryan'
     }
 }
 
