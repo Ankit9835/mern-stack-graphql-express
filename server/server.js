@@ -7,6 +7,8 @@ const { makeExecutableSchema } = require("graphql-tools");
 const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
 const { loadFilesSync } = require("@graphql-tools/load-files");
 const mongoose = require('mongoose')
+const { ApolloServerPluginLandingPageGraphQLPlayground } = require("apollo-server-core");
+
 
 const app = express();
 
@@ -30,7 +32,10 @@ const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./resolvers
 // Create an ApolloServer instance
 const apolloServer = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    plugins: [
+        ApolloServerPluginLandingPageGraphQLPlayground(),
+      ],
 });
 
 async function startServer() {
