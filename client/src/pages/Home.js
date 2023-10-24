@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import ApolloClient from 'apollo-boost'
 import {gql} from 'apollo-boost'
 import { useQuery, useLazyQuery } from '@apollo/client';
+import { AuthContext } from '../context/authContext';
 
 
 const GET_ALL_POSTS = gql`
@@ -17,7 +18,17 @@ const GET_ALL_POSTS = gql`
 const Home = () => {
   const { data, loading, error } = useQuery(GET_ALL_POSTS);
   const [ fetchPosts, {data: posts} ] = useLazyQuery(GET_ALL_POSTS);
+  const {state,dispatch} = useContext(AuthContext)
   console.log('data',data)
+
+  const updateUserName = () => {
+    dispatch({
+      type: 'LOGGED_IN_USER',
+      payload: 'Ankit Sinha'
+    });
+  };
+
+  
 
   if(loading) return <p>Loading</p>
   if (error) return <p>Error: {error.message}</p>;
@@ -42,6 +53,9 @@ const Home = () => {
         <button className='btn btn-danger' onClick={() => fetchPosts()}>Fetch Data</button>
         <hr />
         {JSON.stringify(posts)}
+        <hr />
+        {JSON.stringify(state.user)}
+        <button className='btn btn-danger' onClick={updateUserName}>Update User Name</button>
       </div>
     </div>
   );
