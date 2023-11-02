@@ -5,6 +5,8 @@ import Nav from './components/Nav';
 import { Route, Routes } from 'react-router-dom';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import { ToastContainer } from 'react-toastify';
+import CompleteRegistration from './pages/auth/CompleteRegistration';
 
 
 
@@ -18,10 +20,12 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Nav />
+      <ToastContainer />
       <Routes>
         <Route index element={<Home />} />
         <Route path='login' element={<Login />} />
         <Route path='register' element={<Register />} />
+        <Route path='complete-registration' element={<CompleteRegistration />} />
       </Routes>
     </ApolloProvider>
   )
