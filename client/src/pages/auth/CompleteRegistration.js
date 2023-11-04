@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { auth } from '../../firebase';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../context/authContext';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const CompleteRegistration = () => {
+    const {dispatch} = useContext(AuthContext)
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
     const [loading,setLoading] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         setEmail(window.localStorage.getItem('emailForRegistration'))
@@ -28,7 +34,13 @@ const CompleteRegistration = () => {
                 await user.updatePassword(password);
 
                 // dispatch user with token and email
+                const idTokenResult = await user.getIdTokenResult()
+                dispatch({
+                    type: 'LOGGED_IN_USER',
+                    payload: {email: user.email, token: idTokenResult.token} 
+                })
                 // then redirect
+                navigate('/')
             }
         } catch (error) {
             console.log('register complete error', error.message);
