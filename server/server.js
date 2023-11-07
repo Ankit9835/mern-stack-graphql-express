@@ -33,6 +33,7 @@ const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./resolvers
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    context: ({req,res}) => ({req,res}),
     plugins: [
         ApolloServerPluginLandingPageGraphQLPlayground(),
       ],

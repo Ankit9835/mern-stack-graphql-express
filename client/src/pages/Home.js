@@ -3,6 +3,8 @@ import ApolloClient from 'apollo-boost'
 import {gql} from 'apollo-boost'
 import { useQuery, useLazyQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const GET_ALL_POSTS = gql`
@@ -36,7 +38,7 @@ const Home = () => {
   return (
     <div className="container">
       <div className="row p-5">
-        {data.allPosts.map(p => (
+        {data && data.allPosts.map(p => (
           <div className="col-md-4" key={p.id}>
             <div className="card">
               <div className="card-body">

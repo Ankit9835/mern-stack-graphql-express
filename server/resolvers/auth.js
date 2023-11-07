@@ -1,6 +1,11 @@
 const {gql} = require('apollo-server-express')
+const { authCheck } = require('../helpers/auth')
 
-const me = () => 'Ankit'
+
+const me = async (parent, args, {req,res}) => {
+    await authCheck(req)
+    return 'Ankit'
+}
 
 module.exports = {
     Query: {
