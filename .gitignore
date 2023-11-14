@@ -2,4 +2,4 @@
 /server/.env
 /client/.env
 /client/src/firebase.js
-/server/config/gql/server/config/fbServiceAccountKey.json
+/server/config/fbServiceAccountKey.json
