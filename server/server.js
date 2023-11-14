@@ -3,8 +3,10 @@ const { ApolloServer } = require('apollo-server-express');
 const http = require('http');
 require('dotenv').config();
 const path = require('path');
-const { makeExecutableSchema } = require("graphql-tools");
+//const { makeExecutableSchema } = require("graphql-tools");
 const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
+const { makeExecutableSchema } = require('@graphql-tools/schema');
+//const { mergeTypeDefs, mergeResolvers } = require('@graphql-tools/utils');
 const { loadFilesSync } = require("@graphql-tools/load-files");
 const mongoose = require('mongoose')
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require("apollo-server-core");
@@ -29,10 +31,14 @@ const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, "./typeDefs"))
 const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./resolvers")));
 
 
-// Create an ApolloServer instance
-const apolloServer = new ApolloServer({
+const schema = makeExecutableSchema({
     typeDefs,
     resolvers,
+  });
+
+// Create an ApolloServer instance
+const apolloServer = new ApolloServer({
+    schema,
     context: ({req,res}) => ({req,res}),
     plugins: [
         ApolloServerPluginLandingPageGraphQLPlayground(),
@@ -44,7 +50,7 @@ async function startServer() {
     await apolloServer.start();
 
     // Apply Apollo Server middleware to Express app
-    apolloServer.applyMiddleware({ app });
+    await apolloServer.applyMiddleware({ app });
 
     const httpServer = http.createServer(app);
 
