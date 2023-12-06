@@ -17,6 +17,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import PasswordUpdate from "./pages/auth/PasswordUpdate";
 import Profile from "./pages/auth/Profile";
 import Post from "./pages/post/Post";
+import PasswordForgot from "./pages/auth/PasswordForgot";
+
 
 function App() {
   const { state } = useContext(AuthContext);
@@ -37,9 +39,9 @@ function App() {
       <Routes>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
-
+        <Route path="password/forgot" element={<PasswordForgot />} />
         <Route
-          path="/password/update"
+          path="/update/password"
           element={
             <PrivateRoute>
               <PasswordUpdate />
