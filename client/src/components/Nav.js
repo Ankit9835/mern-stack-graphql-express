@@ -53,16 +53,31 @@ signOut(auth).then(() => {
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
-          <li className="nav-item active">
+          {user && (
+            <>
+               <li className="nav-item active">
+            <Link className="nav-link" to="/profile">
+              Profile
+            </Link>
+            </li>
+            </>
+
+          )}
+          {!user && (
+              <>
+                <li className="nav-item active">
             <Link className="nav-link" to="/login">
               Login
             </Link>
-          </li>
-          <li className="nav-item">
+            </li>
+            <li className="nav-item">
             <Link className="nav-link" to="/register">
               Register
             </Link>
-          </li>
+            </li>
+              </>
+          )}
+          
           {user && (
                         <li className="nav-item">
                             <a onClick={logout}  className="nav-item nav-link">
