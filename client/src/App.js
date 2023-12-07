@@ -27,7 +27,9 @@ function App() {
 
   const client = new ApolloClient({
     uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      addTypename: false
+    }),
     headers: {
       authtoken: user ? user.token : "",
     },
