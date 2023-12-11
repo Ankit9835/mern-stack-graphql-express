@@ -3,59 +3,8 @@ import { toast } from "react-toastify";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import omitDeep from "omit-deep";
-
-const USER_INFO = gql`
-fragment userInfo on User {
-  _id
-  name
-  username
-  email
-  images {
-      url
-      public_id
-  }
-  about
-  createdAt
-  updatedAt
-}
-`
-
-const PROFILE = gql`
-query {
-  profile {
-    _id
-    name
-    username
-    email
-    images {
-        url
-        public_id
-    }
-    about
-    createdAt
-    updatedAt
-  }
-}
-
-`;
-
-const USER_UPDATE = gql`
-  mutation UserUpdate($input: userUpdateInput) {
-    userUpdate(input: $input) {
-      _id
-      name
-      username
-      email
-      images {
-        url
-        public_id
-      }
-      about
-      createdAt
-      updatedAt
-    }
-  }
-`;
+import { PROFILE } from "../../graphql/Query";
+import { USER_UPDATE } from "../../graphql/Mutation";
 
 const Profile = () => {
   const { data } = useQuery(PROFILE);

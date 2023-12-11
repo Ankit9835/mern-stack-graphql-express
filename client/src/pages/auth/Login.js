@@ -6,16 +6,7 @@ import { toast } from 'react-toastify';
 import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import AuthForm from '../../components/forms/AuthForm';
-
-const USER_CREATE = gql`
-    mutation userCreate {
-        userCreate {
-            username
-            email
-        }
-    }
-`;
-
+import { USER_CREATE } from '../../graphql/Mutation';
 
 const Login = () => {
     const navigate = useNavigate()
