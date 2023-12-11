@@ -5,8 +5,13 @@ import { gql } from "apollo-boost";
 import omitDeep from "omit-deep";
 import { PROFILE } from "../../graphql/Query";
 import { USER_UPDATE } from "../../graphql/Mutation";
+import Resizer from 'react-image-file-resizer';
+import axios from 'axios';
+import { AuthContext } from '../../context/authContext';
+import { useContext } from "react";
 
 const Profile = () => {
+  const { state } = useContext(AuthContext);
   const { data } = useQuery(PROFILE);
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
@@ -53,8 +58,44 @@ const Profile = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = () => {
-    //
+  const fileResizeAndUpload = (event) => {
+    let fileInput = false;
+    if (event.target.files[0]) {
+        fileInput = true;
+    }
+    if (fileInput) {
+        Resizer.imageFileResizer(
+            event.target.files[0],
+            300,
+            300,
+            'JPEG',
+            100,
+            0,
+            (uri) => {
+                // console.log(uri);
+                axios
+                    .post(
+                        `${process.env.REACT_APP_REST_ENDPOINT}/uploadimages`,
+                        { image: uri },
+                        {
+                            headers: {
+                                authtoken: state.user.token
+                            }
+                        }
+                    )
+                    .then((response) => {
+                        setLoading(false);
+                        console.log('CLOUDINARY UPLOAD', response);
+                        setValues({ ...values, images: [...images, response.data] });
+                    })
+                    .catch((error) => {
+                        setLoading(false);
+                        console.log('CLOUDINARY UPLOAD FAILED', error);
+                    });
+            },
+            'base64'
+        );
+    }
   };
 
   const profileUpdateForm = () => (
@@ -103,7 +144,7 @@ const Profile = () => {
         <input
           type="file"
           accept="image/*"
-          onChange={handleImageChange}
+          onChange={fileResizeAndUpload}
           className="form-control"
           placholder="Image"
         />
