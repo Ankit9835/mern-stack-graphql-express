@@ -78,7 +78,7 @@ async function startServer() {
       req.body.image,
       (result) => {
         res.send({
-          url: result.url,
+          url: result.secure_url,
           public_id: result.public_id,
         });
       },
@@ -92,8 +92,9 @@ async function startServer() {
   // remove image
   app.post("/removeimage", authCheckMiddleware, (req, res) => {
     let image_id = req.body.public_id;
-
+    console.log('pub',image_id)
     cloudinary.uploader.destroy(image_id, (error, result) => {
+      console.log('error', error)
       if (error) return res.json({ success: false, error });
       res.send("ok");
     });

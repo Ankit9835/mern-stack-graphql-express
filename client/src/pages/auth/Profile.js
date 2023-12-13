@@ -5,9 +5,9 @@ import { gql } from "apollo-boost";
 import omitDeep from "omit-deep";
 import { PROFILE } from "../../graphql/Query";
 import { USER_UPDATE } from "../../graphql/Mutation";
-import Resizer from 'react-image-file-resizer';
-import axios from 'axios';
-import { AuthContext } from '../../context/authContext';
+import Resizer from "react-image-file-resizer";
+import axios from "axios";
+import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
 
 const Profile = () => {
@@ -21,8 +21,6 @@ const Profile = () => {
     username: "",
     images: [],
   });
-
-  
 
   useMemo(() => {
     if (data) {
@@ -61,42 +59,71 @@ const Profile = () => {
   const fileResizeAndUpload = (event) => {
     let fileInput = false;
     if (event.target.files[0]) {
-        fileInput = true;
+      fileInput = true;
     }
     if (fileInput) {
-        Resizer.imageFileResizer(
-            event.target.files[0],
-            300,
-            300,
-            'JPEG',
-            100,
-            0,
-            (uri) => {
-                // console.log(uri);
-                axios
-                    .post(
-                        `${process.env.REACT_APP_REST_ENDPOINT}/uploadimages`,
-                        { image: uri },
-                        {
-                            headers: {
-                                authtoken: state.user.token
-                            }
-                        }
-                    )
-                    .then((response) => {
-                        setLoading(false);
-                        console.log('CLOUDINARY UPLOAD', response);
-                        setValues({ ...values, images: [...images, response.data] });
-                    })
-                    .catch((error) => {
-                        setLoading(false);
-                        console.log('CLOUDINARY UPLOAD FAILED', error);
-                    });
-            },
-            'base64'
-        );
+      Resizer.imageFileResizer(
+        event.target.files[0],
+        300,
+        300,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          // console.log(uri);
+          axios
+            .post(
+              `${process.env.REACT_APP_REST_ENDPOINT}/uploadimages`,
+              { image: uri },
+              {
+                headers: {
+                  authtoken: state.user.token,
+                },
+              }
+            )
+            .then((response) => {
+              setLoading(false);
+              console.log("CLOUDINARY UPLOAD", response);
+              setValues({ ...values, images: [...images, response.data] });
+            })
+            .catch((error) => {
+              setLoading(false);
+              console.log("CLOUDINARY UPLOAD FAILED", error);
+            });
+        },
+        "base64"
+      );
     }
   };
+
+  const handleImageRemove = (id) => {
+    console.log(id)
+    setLoading(true);
+        axios
+            .post(
+                `${process.env.REACT_APP_REST_ENDPOINT}/removeimage`,
+                {
+                    public_id: id
+                },
+                {
+                    headers: {
+                        authtoken: state.user.token
+                    }
+                }
+            )
+            .then((response) => {
+              console.log('res',response)
+                setLoading(false);
+                let filteredImages = images.filter((item) => {
+                    return item.public_id !== id;
+                });
+                setValues({ ...values, images: filteredImages });
+            })
+            .catch((error) => {
+                setLoading(false);
+                console.log(error);
+            });
+  }
 
   const profileUpdateForm = () => (
     <form onSubmit={handleSubmit}>
@@ -172,7 +199,40 @@ const Profile = () => {
     </form>
   );
 
-  return <div className="container p-5">{profileUpdateForm()}</div>;
+  return (
+    <div className="container p-5">
+      <div className="row">
+        <div className="col-md-3">
+          <div className="form-group">
+            <label className="btn btn-primary">
+              Upload Image
+              <input
+                hidden
+                type="file"
+                accept="image/*"
+                onChange={fileResizeAndUpload}
+                className="form-control"
+                placholder="Image"
+              />
+            </label>
+          </div>
+        </div>
+        <div className="col-md-9">
+          {images.map((image) => (
+            <img
+              src={image.url}
+              key={image.public_id}
+              alt={image.public_id}
+              style={{ height: "100px" }}
+              className="float-right"
+              onClick={() => handleImageRemove(image.public_id)}
+            />
+          ))}
+        </div>
+      </div>
+      {profileUpdateForm()}
+    </div>
+  );
 };
 
 export default Profile;
