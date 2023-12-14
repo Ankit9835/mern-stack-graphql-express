@@ -18,6 +18,7 @@ import PasswordUpdate from "./pages/auth/PasswordUpdate";
 import Profile from "./pages/auth/Profile";
 import Post from "./pages/post/Post";
 import PasswordForgot from "./pages/auth/PasswordForgot";
+import PublicRoute from "./components/PublicRoute";
 
 
 function App() {
@@ -40,7 +41,9 @@ function App() {
       <ToastContainer />
       <Routes>
         <Route index element={<Home />} />
-        <Route path="login" element={<Login />} />
+        <Route path="login" element={ <PublicRoute>
+          <Login />
+        </PublicRoute>} />
         <Route path="password/forgot" element={<PasswordForgot />} />
         <Route
           path="/update/password"
@@ -70,7 +73,9 @@ function App() {
           }
         />
 
-        <Route path="register" element={<Register />} />
+        <Route path="register" element={<PublicRoute>
+          <Register />
+        </PublicRoute>} />
         <Route
           path="complete-registration"
           element={<CompleteRegistration />}
