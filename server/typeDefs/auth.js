@@ -6,6 +6,7 @@ module.exports = gql`
     type Query {
         me: String!
         profile: User!
+        publicProfileusername(username: String!): User
     }
     type User {
         _id: ID
@@ -22,6 +23,14 @@ module.exports = gql`
         url: String
         public_id: String
     }
+
+    type UserNotFoundError {
+        message: String!
+    }
+    
+    union PublicProfileResult = User | UserNotFoundError
+
+    union UserResult = User | UserNotFoundError
 
     input ImageInput {
         url: String

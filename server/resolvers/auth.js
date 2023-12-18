@@ -3,6 +3,7 @@ const { authCheck } = require('../helpers/auth')
 const User = require('../models/User')
 const shortid = require('shortid');
 const {DateTimeResolver} = require('graphql-scalars')
+const { GraphQLUnionType } = require('graphql');
 
 
 const me = async (parent, args, {req,res}) => {
@@ -48,10 +49,34 @@ const profile = async (parent, args, {req}) => {
     return user
 }
 
+
+const publicProfileusername = async(parent,args, {req}) => {
+    const {username} = args
+    const user = await User.findOne({username: username})
+    if (user) {
+        return user;
+      } else {
+        return null;
+      }
+}
+
+const UserResult = (obj, context, info) =>  {
+   
+      if (obj._id && obj.username) {
+        return 'User';
+      } else if (obj.message) {
+        return 'UserNotFoundError';
+      }
+      return null;
+
+  }
+  
+
 module.exports = {
     Query: {
         me,
-        profile
+        profile,
+        publicProfileusername
     },
     Mutation: {
         userCreate: userCreateResolver,
