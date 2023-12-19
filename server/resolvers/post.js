@@ -20,12 +20,22 @@ const newPost = (parent,args) => {
     return post
 }
 
+const postCreate = async (parent, args, { req }) => {
+    const user = await authCheck(req)
+    const currentUserFromDb = await User.findOne({email: user.email})
+    let newPost = new Post({
+        ...args.input,
+        postedBy: currentUserFromDb._id
+    }).save().then((post) => post.populate('postedBy', '_id username'))
+
+    return newPost
+}
+
 module.exports = {
     Query: {
-        totalPosts,
         allPosts
     },
     Mutation: {
-        newPost
+        postCreate
     }
 }
