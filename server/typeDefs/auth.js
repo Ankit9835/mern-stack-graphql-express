@@ -7,6 +7,7 @@ module.exports = gql`
         me: String!
         profile: User!
         publicProfileusername(username: String!): User
+        allUsers: [User!]!
     }
     type User {
         _id: ID

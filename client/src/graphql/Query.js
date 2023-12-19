@@ -18,3 +18,21 @@ query {
 }
 
 `;
+
+export const GET_ALL_USERS = gql`
+{
+    allUsers {
+        _id
+        name
+        username
+        email
+        images {
+            url
+            public_id
+        }
+        about
+        createdAt
+        updatedAt
+    }
+  }
+`

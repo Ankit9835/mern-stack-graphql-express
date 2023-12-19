@@ -19,6 +19,8 @@ import Profile from "./pages/auth/Profile";
 import Post from "./pages/post/Post";
 import PasswordForgot from "./pages/auth/PasswordForgot";
 import PublicRoute from "./components/PublicRoute";
+import User from "./pages/User";
+import SingleUser from "./pages/SingleUser";
 
 
 function App() {
@@ -79,6 +81,14 @@ function App() {
         <Route
           path="complete-registration"
           element={<CompleteRegistration />}
+        />
+        <Route
+          path="users"
+          element={<User />}
+        />
+         <Route
+          path="user/:username"
+          element={<SingleUser />}
         />
       </Routes>
     </ApolloProvider>

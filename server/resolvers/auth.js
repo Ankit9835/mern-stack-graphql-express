@@ -70,13 +70,16 @@ const UserResult = (obj, context, info) =>  {
       return null;
 
   }
+
+  const allUsers = async (parent,args) => await User.find() 
   
 
 module.exports = {
     Query: {
         me,
         profile,
-        publicProfileusername
+        publicProfileusername,
+        allUsers
     },
     Mutation: {
         userCreate: userCreateResolver,
