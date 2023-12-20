@@ -3,7 +3,7 @@ const {gql} = require('apollo-server-express')
 
 module.exports = gql`
     type Post {
-        id: ID!
+        _id: ID!
         content: String!
         image: Image
         postedBy: User

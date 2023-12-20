@@ -10,9 +10,17 @@ import { useNavigate } from 'react-router-dom';
 const GET_ALL_POSTS = gql`
 {
     allPosts {
-      id
-      title
-      description
+      _id
+      content
+      image{
+        url
+        public_id
+      }
+      postedBy{
+        name
+        username
+        email
+      }
     }
   }
 `

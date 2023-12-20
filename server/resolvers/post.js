@@ -1,24 +1,17 @@
 const {gql} = require('apollo-server-express')
 const {posts} = require('../post')
 const { authCheck } = require('../helpers/auth')
+const User = require('../models/User')
+const Post = require('../models/Post')
 
 
-const totalPosts = () => posts.length
 const allPosts = async (parent, args, { req }) => {
-    await authCheck(req);
-    return posts;
+    
+    const posts = await Post.find({}).populate('postedBy', '_id username name')
+    console.log('posts',posts)
+    return posts
 };
 
-const newPost = (parent,args) => {
-    console.log('args',args)
-    const post = {
-        id: posts.length + 1,
-        title: args.input.title,
-        description: args.input.description
-    }
-    posts.push(post)
-    return post
-}
 
 const postCreate = async (parent, args, { req }) => {
     const user = await authCheck(req)
@@ -26,9 +19,16 @@ const postCreate = async (parent, args, { req }) => {
     let newPost = new Post({
         ...args.input,
         postedBy: currentUserFromDb._id
-    }).save().then((post) => post.populate('postedBy', '_id username'))
+    }).save()
 
-    return newPost
+    await newPost.save();
+
+    // Populate the postedBy field before returning the new post
+    const populatedPost = await newPost
+        .populate('postedBy', '_id username')
+        .execPopulate();
+
+    return populatedPost;
 }
 
 module.exports = {
