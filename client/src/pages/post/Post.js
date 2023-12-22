@@ -4,6 +4,8 @@ import { AuthContext } from '../../context/authContext';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import omitDeep from 'omit-deep';
 import FileUpload from '../../components/FileUpload';
+import { POST_CREATE } from '../../graphql/Mutation';
+import { POST_BY_USER } from '../../graphql/Query';
 
 const initialState = {
     content: '',
@@ -20,8 +22,20 @@ const Post = () => {
     // destructure
     const { content, image } = values;
 
-    const handleSubmit = () => {
-        //
+    const [postCreate] = useMutation(POST_CREATE, {
+        update: (err) => console.log(err),
+        onError: (err) => console.log(err.graphqQLError[0].message)
+    })
+
+    const {data: posts} = useQuery(POST_BY_USER)
+    console.log('posts',posts)
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+        postCreate({variables: {input: values}})
+        setValues(initialState)
+        setLoading(false)
+        toast.success('Post Created!')
     };
 
     const handleChange = (e) => {
@@ -67,7 +81,18 @@ const Post = () => {
                 <div className="col-md-9">{createForm()}</div>
             </div>
             <hr />
-            {JSON.stringify(image)}
+        {posts && posts.postByUser.map(p => (
+          <div className="col-md-4" key={p._id}>
+            <div className="card">
+              <div className="card-body">
+                <div className="card-title">
+                  <h4>@{p.postedBy.username}</h4>
+                </div>
+                <p className="card-text">{p.content}</p>
+              </div>
+            </div>
+          </div>
+        ))}
         </div>
     );
 };

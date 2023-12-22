@@ -10,6 +10,7 @@ module.exports = gql`
     }
     type Query {
         allPosts: [Post!]!
+        postByUser: [Post!]!
     }
     input PostCreateInput {
         content: String!

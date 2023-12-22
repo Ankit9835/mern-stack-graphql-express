@@ -19,7 +19,7 @@ export const USER_UPDATE = gql`
 `;
 
 export const POST_CREATE = gql`
-  mutation postCreate($input: PostCreateInput){
+  mutation postCreate($input: PostCreateInput!){
     postCreate(input: $input){
       _id
       content
@@ -28,6 +28,8 @@ export const POST_CREATE = gql`
       }
       postedBy{
         name
+        username
+        email
       }
     }
   }
