@@ -18,6 +18,21 @@ export const USER_UPDATE = gql`
   }
 `;
 
+export const POST_CREATE = gql`
+  mutation postCreate($input: PostCreateInput){
+    postCreate(input: $input){
+      _id
+      content
+      image{
+        public_id
+      }
+      postedBy{
+        name
+      }
+    }
+  }
+`
+
 export const USER_CREATE = gql`
     mutation userCreate {
         userCreate {

@@ -6,8 +6,7 @@ const Post = require('../models/Post')
 
 
 const allPosts = async (parent, args, { req }) => {
-    
-    const posts = await Post.find({}).populate('postedBy', '_id username name')
+    const posts = await Post.find({}).populate('postedBy', '_id username name email')
     console.log('posts',posts)
     return posts
 };

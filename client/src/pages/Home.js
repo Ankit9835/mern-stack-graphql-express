@@ -19,7 +19,6 @@ const GET_ALL_POSTS = gql`
       postedBy{
         name
         username
-        email
       }
     }
   }
@@ -47,13 +46,13 @@ const Home = () => {
     <div className="container">
       <div className="row p-5">
         {data && data.allPosts.map(p => (
-          <div className="col-md-4" key={p.id}>
+          <div className="col-md-4" key={p._id}>
             <div className="card">
               <div className="card-body">
                 <div className="card-title">
-                  <h4>{p.title}</h4>
+                  <h4>@{p.postedBy.username}</h4>
                 </div>
-                <p className="card-text">{p.description}</p>
+                <p className="card-text">{p.content}</p>
               </div>
             </div>
           </div>
