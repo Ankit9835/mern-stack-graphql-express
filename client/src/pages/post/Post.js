@@ -23,7 +23,19 @@ const Post = () => {
     const { content, image } = values;
 
     const [postCreate] = useMutation(POST_CREATE, {
-        update: (err) => console.log(err),
+        update: (cache, {data: {postCreate}}) => {
+            // read Query from cache
+            const { postByUser } = cache.readQuery({
+                query:  POST_BY_USER
+            });
+            // write Query to cache
+            cache.writeQuery({
+                query:  POST_BY_USER,
+                data: {
+                    postByUser: [postCreate, ...postByUser]
+                }
+            });
+        },
         onError: (err) => console.log(err.graphqQLError[0].message)
     })
 

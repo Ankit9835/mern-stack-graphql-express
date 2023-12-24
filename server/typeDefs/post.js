@@ -16,7 +16,14 @@ module.exports = gql`
         content: String!
         image: ImageInput
     }
+
+    input PostUpdateInput {
+        _id: String!
+        content: String!
+        image: ImageInput
+    }
     type Mutation {
         postCreate(input: PostCreateInput!): Post!
+        postUpdate(input: PostUpdateInput!): Post!
     }
 `

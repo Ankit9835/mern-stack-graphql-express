@@ -3,6 +3,7 @@ const { posts } = require("../post");
 const { authCheck } = require("../helpers/auth");
 const User = require("../models/User");
 const Post = require("../models/Post");
+const mongoose = require('mongoose');
 
 const allPosts = async (parent, args, { req }) => {
   const posts = await Post.find({}).populate(
@@ -34,10 +35,37 @@ const postCreate = async (parent, args, { req }) => {
 
 const postByUser = async (parent, args, { req }) => {
   const currentUser = await authCheck(req);
-  const currentUserFromDb = await User.findOne({email: currentUser.email})
+  const currentUserFromDb = await User.findOne({ email: currentUser.email });
   return await Post.find({ postedBy: currentUserFromDb })
     .populate("postedBy", "username name email")
     .sort({ createdAt: -1 });
+};
+
+const postUpdate = async (parent, args, { req }) => {
+  const currentUser = await authCheck(req);
+  const currentUserFromDb = await User.findOne({ email: currentUser.email });
+
+  const postId = args.input._id; // Assuming args.input._id is the string representation of the ID
+
+  if (mongoose.Types.ObjectId.isValid(postId)) {
+    const post = await Post.findOne({ _id: postId });
+    if (post) {
+      if (currentUserFromDb._id.toString() !== post.postedBy.toString()) {
+        throw new Error("Unauthrized access");
+      } else {
+        let newPost = await Post.findByIdAndUpdate(
+          args.input._id,
+          { ...args.input },
+          { new: true }
+        );
+        return newPost;
+      }
+    } else {
+      throw new Error("Post not found");
+    }
+  } else {
+    throw new Error("Invalid ObjectId");
+  }
 };
 
 module.exports = {
@@ -47,5 +75,6 @@ module.exports = {
   },
   Mutation: {
     postCreate,
+    postUpdate,
   },
 };
