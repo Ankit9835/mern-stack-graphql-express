@@ -21,6 +21,7 @@ import PasswordForgot from "./pages/auth/PasswordForgot";
 import PublicRoute from "./components/PublicRoute";
 import User from "./pages/User";
 import SingleUser from "./pages/SingleUser";
+import PostUpdate from "./pages/post/PostUpdate";
 
 
 function App() {
@@ -71,6 +72,15 @@ function App() {
           element={
             <PrivateRoute>
               <Post />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/post/update/:postId"
+          element={
+            <PrivateRoute>
+              <PostUpdate />
             </PrivateRoute>
           }
         />

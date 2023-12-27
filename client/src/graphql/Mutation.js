@@ -43,3 +43,27 @@ export const USER_CREATE = gql`
         }
     }
 `
+
+export const POST_DELETE = gql`
+    mutation postDelete($postId: String){
+      postDelete(postId: $postId){
+        content
+        image{
+          public_id
+          url
+        }
+      }
+    }
+`
+
+export const POST_UPDATE = gql`
+    mutation postUpdate($input: PostUpdateInput){
+      postUpdate(input: $input){
+        content
+        image{
+          public_id
+          url
+        }
+      }
+    }
+`

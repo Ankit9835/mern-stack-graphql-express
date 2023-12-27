@@ -4,8 +4,10 @@ import { AuthContext } from '../../context/authContext';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import omitDeep from 'omit-deep';
 import FileUpload from '../../components/FileUpload';
-import { POST_CREATE } from '../../graphql/Mutation';
+import { POST_CREATE, POST_DELETE } from '../../graphql/Mutation';
 import { POST_BY_USER } from '../../graphql/Query';
+import { useNavigate } from 'react-router-dom';
+
 
 const initialState = {
     content: '',
@@ -16,6 +18,7 @@ const initialState = {
 };
 
 const Post = () => {
+    const navigate = useNavigate()
     const [values, setValues] = useState(initialState);
     const [loading, setLoading] = useState(false);
 
@@ -41,6 +44,33 @@ const Post = () => {
 
     const {data: posts} = useQuery(POST_BY_USER)
     console.log('posts',posts)
+
+
+
+    const [postDelete] = useMutation(POST_DELETE, {
+        update: ({ data }) => {
+            console.log('POST DELETE MUTATION', data);
+            toast.error('Post deleted');
+        },
+        onError: (err) => {
+            console.log(err);
+            toast.error('Post delete failed');
+        }
+    });
+
+    const handleDelete = async (postId) => {
+        let answer = window.confirm('Delete?');
+        if (answer) {
+            console.log('id',postId)
+            setLoading(true);
+            postDelete({
+                variables: { postId },
+                refetchQueries: [{ query: POST_BY_USER }]
+            });
+            setLoading(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
@@ -96,11 +126,17 @@ const Post = () => {
         {posts && posts.postByUser.map(p => (
           <div className="col-md-4" key={p._id}>
             <div className="card">
+                
               <div className="card-body">
                 <div className="card-title">
                   <h4>@{p.postedBy.username}</h4>
                 </div>
                 <p className="card-text">{p.content}</p>
+               
+                    <button onClick={() => handleDelete(p._id)} className="btn m-2 btn-danger">
+                        Delete
+                    </button>
+                 <button onClick={() => navigate(`/post/update/${p._id}`)} className="btn m-2 btn-warning">Update</button>
               </div>
             </div>
           </div>

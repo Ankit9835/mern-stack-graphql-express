@@ -68,13 +68,47 @@ const postUpdate = async (parent, args, { req }) => {
   }
 };
 
+
+const postDelete = async (parent,args,{req}) => {
+  const currentUser = await authCheck(req)
+  const currentUserFromDb = await User.findOne({email: currentUser.email})
+  const post = await Post.findOne({_id: args.postId})
+  console.log('currentUser', currentUserFromDb._id.toString())
+  console.log('post', post.postedBy.toString())
+  if(currentUserFromDb._id.toString() !== post.postedBy.toString()){
+    throw new Error('Unauthorized Access')
+  } else {
+    let postDelete = await Post.findByIdAndDelete({_id: args.postId})
+    return postDelete
+  }
+}
+
+const singlePostUser = async (parent,args, {req}) => {
+  try {
+    const currentUser = await authCheck(req)
+    const currentUserFromDb = await User.findOne({email: currentUser.email})
+    const post = await Post.findById({_id: args.postId})
+
+    if(currentUserFromDb._id.toString() !== post.postedBy._id.toString()){
+      throw new Error('Unauthorized Access')
+    } else {
+      const singlePost = await Post.findById({_id: args.postId})
+      return singlePost
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   Query: {
     allPosts,
     postByUser,
+    singlePostUser
   },
   Mutation: {
     postCreate,
     postUpdate,
+    postDelete
   },
 };

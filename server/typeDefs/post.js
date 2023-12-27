@@ -11,6 +11,7 @@ module.exports = gql`
     type Query {
         allPosts: [Post!]!
         postByUser: [Post!]!
+        singlePostUser(postId: String!): Post!
     }
     input PostCreateInput {
         content: String!
@@ -26,6 +27,6 @@ module.exports = gql`
     type Mutation {
         postCreate(input: PostCreateInput!): Post!
         postUpdate(input: PostUpdateInput!): Post!
-        postDelete(_id: String): Post!
+        postDelete(postId: String): Post!
     }
 `

@@ -39,6 +39,7 @@ export const GET_ALL_USERS = gql`
 export const POST_BY_USER = gql`
   {
     postByUser {
+      _id
       content
       image {
         public_id
@@ -50,3 +51,5 @@ export const POST_BY_USER = gql`
     }
   }
 `;
+
+
