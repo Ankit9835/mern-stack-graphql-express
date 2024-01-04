@@ -52,4 +52,17 @@ export const POST_BY_USER = gql`
   }
 `;
 
+export const SINGLE_POST = gql`
+  query singlePostUser($postId: String!) {
+    singlePostUser(postId: $postId) {
+      _id
+      content
+      image{
+        url
+        public_id
+      }
+    }
+  }
+`
+
 

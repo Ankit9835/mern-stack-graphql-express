@@ -57,8 +57,9 @@ export const POST_DELETE = gql`
 `
 
 export const POST_UPDATE = gql`
-    mutation postUpdate($input: PostUpdateInput){
+    mutation postUpdate($input: PostUpdateInput!){
       postUpdate(input: $input){
+        _id
         content
         image{
           public_id
