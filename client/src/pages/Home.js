@@ -3,7 +3,7 @@ import ApolloClient from 'apollo-boost'
 import {gql} from 'apollo-boost'
 import { useQuery, useLazyQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
@@ -50,7 +50,10 @@ const Home = () => {
             <div className="card">
               <div className="card-body">
                 <div className="card-title">
-                  <h4>@{p.postedBy.username}</h4>
+                  <Link to={`/post/${p._id}`}>
+                    <h4>@{p.postedBy.username}</h4>
+                  </Link>
+                  
                 </div>
                 <p className="card-text">{p.content}</p>
               </div>

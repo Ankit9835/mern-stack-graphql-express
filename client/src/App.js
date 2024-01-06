@@ -22,6 +22,7 @@ import PublicRoute from "./components/PublicRoute";
 import User from "./pages/User";
 import SingleUser from "./pages/SingleUser";
 import PostUpdate from "./pages/post/PostUpdate";
+import SinglePost from "./pages/post/SinglePost";
 
 
 function App() {
@@ -84,6 +85,9 @@ function App() {
             </PrivateRoute>
           }
         />
+
+
+        <Route path="post/:postId" element={<SinglePost />} />
 
         <Route path="register" element={<PublicRoute>
           <Register />
