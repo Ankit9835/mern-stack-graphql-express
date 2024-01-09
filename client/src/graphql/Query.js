@@ -61,6 +61,11 @@ export const SINGLE_POST = gql`
         url
         public_id
       }
+      postedBy{
+        username
+        name 
+        email
+      }
     }
   }
 `

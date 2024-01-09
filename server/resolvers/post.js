@@ -6,12 +6,14 @@ const Post = require("../models/Post");
 const mongoose = require('mongoose');
 
 const allPosts = async (parent, args, { req }) => {
-  const posts = await Post.find({}).populate(
-    "postedBy",
-    "_id username name email"
-  );
-  console.log("posts", posts);
-  return posts;
+  const currentPage = args.page || 1;
+  const perPage = 3;
+
+  return await Post.find({})
+      .skip((currentPage - 1) * perPage)
+      .populate('postedBy', 'username _id email name')
+      .limit(perPage)
+      .sort({ createdAt: -1 })
 };
 
 const postCreate = async (parent, args, { req }) => {
@@ -92,7 +94,8 @@ const singlePostUser = async (parent,args, {req}) => {
     if(currentUserFromDb._id.toString() !== post.postedBy._id.toString()){
       throw new Error('Unauthorized Access')
     } else {
-      const singlePost = await Post.findById({_id: args.postId})
+      const singlePost = await Post.findById({_id: args.postId}).populate("postedBy", "username name email")
+      .sort({ createdAt: -1 });
       return singlePost
     }
   } catch (error) {
@@ -100,11 +103,21 @@ const singlePostUser = async (parent,args, {req}) => {
   }
 }
 
+const totalPost = async (parent,args, {req}) => {
+  try {
+    const post = await Post.find({}).countDocuments()
+    return post
+  } catch (error) {
+    console.log(error)    
+  }
+}
+
 module.exports = {
   Query: {
     allPosts,
     postByUser,
-    singlePostUser
+    singlePostUser,
+    totalPost
   },
   Mutation: {
     postCreate,

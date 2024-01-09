@@ -9,7 +9,8 @@ module.exports = gql`
         postedBy: User
     }
     type Query {
-        allPosts: [Post!]!
+        totalPost: Int!
+        allPosts(page: Int): [Post!]!
         postByUser: [Post!]!
         singlePostUser(postId: String!): Post!
     }
