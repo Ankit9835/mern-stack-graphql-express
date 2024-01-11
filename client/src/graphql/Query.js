@@ -70,4 +70,11 @@ export const SINGLE_POST = gql`
   }
 `
 
+export const TOTAL_POST = gql`
+  {
+    totalPost
+  }
+
+`
+
 

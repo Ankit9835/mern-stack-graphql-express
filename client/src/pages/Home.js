@@ -4,6 +4,7 @@ import {gql} from 'apollo-boost'
 import { useQuery, useLazyQuery } from '@apollo/client';
 import { AuthContext } from '../context/authContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { TOTAL_POST } from '../graphql/Query';
 
 
 
@@ -25,11 +26,16 @@ const GET_ALL_POSTS = gql`
 `
 
 const Home = () => {
-  const { data, loading, error } = useQuery(GET_ALL_POSTS);
+  const [page,setPage] = useState(1)
+  const { data, loading, error } = useQuery(GET_ALL_POSTS, {
+    variables: { page }
+  });
+  
   const [ fetchPosts, {data: posts} ] = useLazyQuery(GET_ALL_POSTS);
   const {state,dispatch} = useContext(AuthContext)
+  const { data: postCount } = useQuery(TOTAL_POST);
   console.log('data',data)
-
+  console.log('post count', postCount)
   const updateUserName = () => {
     dispatch({
       type: 'LOGGED_IN_USER',
@@ -37,6 +43,21 @@ const Home = () => {
     });
   };
 
+  const pagination = () => {
+    const totalPages = Math.ceil(postCount && postCount.totalPost / 3);
+     console.log(totalPages);
+    let pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(
+        <li>
+          <a className="page-link" onClick={() => setPage(i)}>
+            {i}
+          </a>
+        </li>
+      );
+    }
+    return pages;
+  };
   
 
   if(loading) return <p>Loading</p>
@@ -61,10 +82,15 @@ const Home = () => {
           </div>
         ))}
       </div>
+      
       <div>
-        <button className='btn btn-danger' onClick={() => fetchPosts()}>Fetch Data</button>
+        
+      <nav>
+        <ul className="pagination justify-content-center">{pagination()}</ul>
+      </nav>
+        {/* <button className='btn btn-danger' onClick={() => fetchPosts()}>Fetch Data</button>
         <hr />
-        {JSON.stringify(posts)}
+        {JSON.stringify(posts)} */}
         <hr />
         {JSON.stringify(state.user)}
         <button className='btn btn-danger' onClick={updateUserName}>Update User Name</button>
