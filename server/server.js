@@ -1,5 +1,5 @@
 const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
+const { ApolloServer, PubSub } = require("apollo-server-express");
 const http = require("http");
 require("dotenv").config();
 const path = require("path");
@@ -15,6 +15,8 @@ const {
 const cors = require("cors");
 const cloudinary = require("cloudinary");
 const { authCheckMiddleware } = require('./helpers/auth');
+
+const pubsub = new PubSub()
 
 const app = express();
 
@@ -47,7 +49,7 @@ const schema = makeExecutableSchema({
 // Create an ApolloServer instance
 const apolloServer = new ApolloServer({
   schema,
-  context: ({ req, res }) => ({ req, res }),
+  context: ({ req, pubsub }) => ({ req, pubsub }),
   plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 });
 
@@ -59,6 +61,7 @@ async function startServer() {
   await apolloServer.applyMiddleware({ app });
 
   const httpServer = http.createServer(app);
+  apolloServer.installSubscriptionHandlers(httpServer)
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -105,6 +108,7 @@ async function startServer() {
     console.log(
       `graphql server is ready at http://localhost:${process.env.PORT}${apolloServer.graphqlPath}`
     );
+    console.log(`subscription is ready at http://localhost:${process.env.PORT}${apolloServer.subscriptionsPath}`);
   });
 }
 
