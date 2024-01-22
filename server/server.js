@@ -1,12 +1,13 @@
 const express = require("express");
-const { ApolloServer, PubSub } = require("apollo-server-express");
+const { ApolloServer } = require("apollo-server-express");
+const { PubSub } = require('graphql-subscriptions');
 const http = require("http");
+const { WebSocketServer } = require('ws');
 require("dotenv").config();
 const path = require("path");
-//const { makeExecutableSchema } = require("graphql-tools");
 const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
 const { makeExecutableSchema } = require("@graphql-tools/schema");
-//const { mergeTypeDefs, mergeResolvers } = require('@graphql-tools/utils');
+const { useServer } = require('graphql-ws/lib/use/ws');
 const { loadFilesSync } = require("@graphql-tools/load-files");
 const mongoose = require("mongoose");
 const {
@@ -16,18 +17,23 @@ const cors = require("cors");
 const cloudinary = require("cloudinary");
 const { authCheckMiddleware } = require('./helpers/auth');
 
-const pubsub = new PubSub()
+const pubsub = new PubSub();
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-const connectDB = () => {
-  return mongoose.connect(process.env.DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.DB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+  }
 };
 
 connectDB();
@@ -49,8 +55,11 @@ const schema = makeExecutableSchema({
 // Create an ApolloServer instance
 const apolloServer = new ApolloServer({
   schema,
-  context: ({ req, pubsub }) => ({ req, pubsub }),
+  context: ({ req }) => ({ req, pubsub }),
   plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+  subscriptions: {
+    path: '/subscriptions',
+  },
 });
 
 async function startServer() {
@@ -58,16 +67,21 @@ async function startServer() {
   await apolloServer.start();
 
   // Apply Apollo Server middleware to Express app
-  await apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app });
 
   const httpServer = http.createServer(app);
-  apolloServer.installSubscriptionHandlers(httpServer)
+
+  // Create a WebSocket server instance
+  const wsServer = new WebSocketServer({ server: httpServer, path: '/subscriptions' });
+
+  // Apply the GraphQL WebSocket server using graphql-ws
+  useServer({ schema }, wsServer);
 
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
-});
+  });
 
   app.get("/rest", function (req, res) {
     res.json({
@@ -106,9 +120,9 @@ async function startServer() {
   httpServer.listen(process.env.PORT, function () {
     console.log(`server listening to port no ${process.env.PORT}`);
     console.log(
-      `graphql server is ready at http://localhost:${process.env.PORT}${apolloServer.graphqlPath}`
+      `GraphQL server is ready at http://localhost:${process.env.PORT}${apolloServer.graphqlPath}`
     );
-    console.log(`subscription is ready at http://localhost:${process.env.PORT}${apolloServer.subscriptionsPath}`);
+    console.log(`WebSocket subscriptions are ready at ws://localhost:${process.env.PORT}/subscriptions`);
   });
 }
 

@@ -5,6 +5,8 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const mongoose = require('mongoose');
 
+const POST_ADDED = 'POST_ADDED'
+
 const allPosts = async (parent, args, { req }) => {
   const currentPage = args.page || 1;
   const perPage = 3;
@@ -16,7 +18,7 @@ const allPosts = async (parent, args, { req }) => {
       .sort({ createdAt: -1 })
 };
 
-const postCreate = async (parent, args, { req }) => {
+const postCreate = async (parent, args, { req, pubsub }) => {
   const user = await authCheck(req);
   const currentUserFromDb = await User.findOne({ email: user.email });
   let newPost = await new Post({
@@ -31,6 +33,8 @@ const postCreate = async (parent, args, { req }) => {
     "postedBy",
     "_id username email name"
   );
+
+  pubsub.publish(POST_ADDED, {postAdded: populatedPost})
 
   return populatedPost;
 };
@@ -124,4 +128,9 @@ module.exports = {
     postUpdate,
     postDelete
   },
+  Subscription: {
+    postAdded: {
+      subscribe: (parent, args, {pubsub}) => pubsub.asyncIterator([POST_ADDED])
+    }
+  }
 };
